@@ -1,0 +1,33 @@
+# Canal — nutri-v1 (só acrescentar; nunca reescrever)
+
+Conhecimento do projeto que a compactação perde: fatos descobertos, aprendizados, glossário, armadilhas, onde estão as coisas.
+Não é estado da tarefa (isso vai em state/plan/progress). Preencha cedo — o hook avisa na faixa 1 (~50% do contexto).
+
+Formato: `- AAAA-MM-DD HH:MM · fato|aprendizado|glossário|armadilha · texto`
+
+- 2026-10-05 16:30 · fato · Molde é o `~/projetos/atende-clinica` (93/93); o que muda está na seção 0 da spec. Config é `nutricao.json` (não `clinica.json`); relógio fixo por `ATENDE_AGORA`; o conftest limpa `EVOLUTION_*`, `TELEGRAM_*`, `WEBHOOK_*` e `ATENDE_*` do ambiente.
+- 2026-10-05 16:30 · armadilha · Normalização da conversa preserva `,` e `.` entre dígitos (`82,5`); todo o resto da pontuação some. Regras novas (peso/água/refeição) casam por token inteiro, não por substring.
+- 2026-10-05 16:30 · armadilha · Pendência de confirmação/espera só consome texto IGUAL a `1`/`sim`/`confirmo`/`2`/`cancelar`/`nao`; `nao comi` e `1 copo` seguem para o registro do diário (testes `test_responder_*`).
+- 2026-10-05 16:30 · armadilha · `retorno_atual_pct` conta QUALQUER serviço realizado em `(data_origem, data + 30]` (pontas: origem exclusiva, fim inclusivo); com `retorno_dias = 30` o atendimento de origem cai exatamente em `data − 30` e NÃO pode contar.
+- 2026-10-05 16:30 · armadilha · Lembrete de água/refeição só sai dentro de `[H, H + lembrete_tolerancia_min]`; fora disso o lembrete daquele dia nunca sai (não acumula). `enviadas` conta mensagens criadas mesmo com envio `pendente`; `nao_contatar` não cria mensagem.
+- 2026-10-05 16:30 · armadilha · Foto do WhatsApp: só `mimetype`/`caption` viram registro; nunca chamar `getBase64FromMediaMessage` nem buscar a `url` do payload (o verificar-limites.sh acusa).
+- 2026-10-05 19:00 · armadilha · (validação) Oferta da lista de espera é do MESMO horário e MESMO profissional liberados: o `1` não cai em outro profissional livre (§7). `/api/horarios` com profissional existente que não faz o serviço → 200 `[]`. `/dados.mensagens` inclui as respostas do bot na conversa como `saida`. Peso: `79.25` → `79,3 kg` (ROUND_HALF_UP, não `round()`). Diário ordenado por `quando`, depois `id` (um teste sobe servidor em 07/10 06:00 por isso).
+- 2026-10-05 16:30 · fato · Os checks 2–4 do briefing exigem 0 passed sem implementação: Dockerfile, compose, `.env.exemplo` e a seção "Deploy na VPS" do README são do implementador; o README já traz "Como rodar no seu ambiente" e o teste exige as duas seções.
+
+- 2026-10-19 13:51 · fato · Primeira implementação em src/storage.py, src/domain.py e src/server.py. Estado em estado.sqlite3; semeia coleções só quando marcador sistema/semente inexiste. Agenda e pacientes persistiram em reinício manual; teste global de persistência ainda depende de plano/peso.
+- 2026-10-19 13:51 · armadilha · Testes de agenda incluem leitura /pacientes/id/dados; teste de autenticação termina com conversa pública. Ambos podem falhar por módulos pendentes embora as partes anteriores funcionem. Não criar respostas vazias artificiais para fazer esses testes passarem.
+
+- 2026-10-19 13:57 · fato · conversation.py implementa prioridades e fluxo; nutrition.py implementa plano/metas/diário; tasks.py cria saída simulada, confirmação/espera/retorno/lembretes. A integração futura precisa enviar por Tasks.output e encaminhar mensagens de Conversation.message sem duplicar o histórico.
+- 2026-10-19 13:57 · armadilha · Pendência usa exclusivamente a última saída do telefone, não mensagens da conversa; guarda inicio para não confirmar agendamento remarcado com uma mensagem antiga. Oferta de espera guarda profissional, inicio, servico e modalidade.
+- 2026-10-19 13:57 · fato · GET /dados já agrega as coleções reais, mas exclusão LGPD ainda falta. Pesos são uma visão dos registros tipo peso do diário: não criar outra série divergente. Preferências antes de cadastro ficam em preferencias por telefone.
+
+- 2026-10-19 14:03 · fato · src/reporting.py implementa campanhas, DELETE /pacientes/id e Raio-X HTTP/CLI. Histórico anonimizado usa paciente_id: nunca selecionar mensagens por telefone null (misturaria pacientes removidos). Verificação adicional local cobriu dois removidos, retorno no último dia e fora da janela, merge do mês anterior e repetição sem duplicata.
+
+- 2026-10-19 14:09 · fato · src/registrations.py implementa edição/inativação, FAQ e bloqueios; src/backup.py implementa CLI backup/restaurar. Checagem extra confirmou restauração inválida preservando banco, restauração em diretório novo e edição inválida sem mutação.
+- 2026-10-19 14:09 · armadilha · Horários próprios vazios não herdam os do consultório: só null herda. Agenda corrigida; Raio-X já distinguia null corretamente.
+
+- 2026-10-19 14:15 · fato · src/integrations.py implementa Evolution e send_whatsapp; Handler valida segredo antes do corpo. Texto usa Conversation.message (já grava histórico); foto/sem texto usa history específico. Deduplicação persiste em evolution_recebidas; confirmada após reinício. Retry não cria novo histórico e respeita nao_contatar para automáticas. Telegram ainda ausente.
+
+- 2026-10-19 14:19 · fato · Telegram em src/telegram.py: message_id da abertura fica no atendimento; telegram_referencias relaciona abertura/encaminhamento ao atendimento; telegram_recebidas deduplica update_id. Conversation encaminha após decidir para incluir prioridade elevada sem abrir fila duplicada. Referências são removidas em Reporting.erase. Sem as quatro variáveis Telegram não há envio.
+
+- 2026-10-19 14:22 · fato · Entrega Docker e README pronta; 98/99 testes, único restante test_paginas. web/.gitkeep mantém diretório para COPY; páginas ainda não existem. Healthcheck real validado contra servidor local em porta efêmera e dados novos; nenhum build Docker ou acesso externo realizado.

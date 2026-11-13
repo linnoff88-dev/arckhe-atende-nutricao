@@ -1,0 +1,30 @@
+2026-10-19 13:48:15 início: rápido=0 passed · agente=codex · teto 20x30min · mem 8G
+2026-10-19 13:48:15 ciclo 1: começa
+2026-10-19 13:51:23 ciclo 1: agente saiu rc=0 em 188s
+2026-10-19 13:51:58 ciclo 1: rápido=19 passed (melhor antes: 0)
+2026-10-19 13:51:58 ciclo 1: checkpoint commitado
+2026-10-19 13:52:34 ciclo 2: começa
+2026-10-19 13:58:50 ciclo 2: agente saiu rc=0 em 376s
+2026-10-19 14:00:06 ciclo 2: rápido=62 passed (melhor antes: 19)
+2026-10-19 14:00:07 ciclo 2: checkpoint commitado
+2026-10-19 14:01:22 ciclo 3: começa
+2026-10-19 14:04:15 ciclo 3: agente saiu rc=0 em 173s
+2026-10-19 14:05:32 ciclo 3: rápido=70 passed (melhor antes: 62)
+2026-10-19 14:05:32 ciclo 3: checkpoint commitado
+2026-10-19 14:06:49 ciclo 4: começa
+2026-10-19 14:09:48 ciclo 4: agente saiu rc=0 em 179s
+2026-10-19 14:11:05 ciclo 4: rápido=79 passed (melhor antes: 70)
+2026-10-19 14:11:05 ciclo 4: checkpoint commitado
+2026-10-19 14:12:23 ciclo 5: começa
+2026-10-19 14:15:14 ciclo 5: agente saiu rc=0 em 171s
+2026-10-19 14:16:23 ciclo 5: rápido=84 passed (melhor antes: 79)
+2026-10-19 14:16:23 ciclo 5: checkpoint commitado
+2026-10-19 14:17:31 ciclo 6: começa
+2026-10-19 14:20:10 ciclo 6: agente saiu rc=0 em 159s
+2026-10-19 14:20:30 ciclo 6: rápido=94 passed (melhor antes: 84)
+2026-10-19 14:20:30 ciclo 6: checkpoint commitado
+2026-10-19 14:20:51 ciclo 7: começa
+2026-10-19 14:22:56 ciclo 7: agente saiu rc=0 em 125s
+2026-10-19 14:23:18 ciclo 7: rápido=98 passed (melhor antes: 94)
+2026-10-19 14:23:18 ciclo 7: checkpoint commitado
+2026-10-19 14:23:42 ciclo 8: começa
